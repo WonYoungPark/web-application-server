@@ -57,8 +57,7 @@ public class RequestHandler extends Thread {
                     byte[] body = Files.readAllBytes(new File("./webapp/index.html").toPath());
                     response200Header(dos, body.length);
                     responseBody(dos, body);
-                }
-			    else if (url.startsWith("/user/list")) {
+                } else if (url.startsWith("/user/list")) {
 			        boolean isLogined = Boolean.parseBoolean(HttpRequestUtils.parseCookies(headers.get("Cookie")).get("logined"));
                     DataOutputStream dos = new DataOutputStream(out);
                     if (isLogined) {
@@ -68,6 +67,11 @@ public class RequestHandler extends Thread {
                     } else {
                         response302Header(dos, "/user/login.html");
                     }
+                } else if (url.endsWith(".css")) {
+                    DataOutputStream dos = new DataOutputStream(out);
+                    byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+                    response200CssHeader(dos, body.length);
+                    responseBody(dos, body);
                 } else {
                     DataOutputStream dos = new DataOutputStream(out);
                     byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
@@ -170,6 +174,17 @@ public class RequestHandler extends Thread {
 //            dos.writeBytes("HTTP/1.1 200 OK \r\n");
 //            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
             dos.writeBytes("Set-Cookie: logined=" + isLoginSuccess + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    private void response200CssHeader(DataOutputStream dos, int lengthOfBodyContent) {
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: text/css\r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             log.error(e.getMessage());

@@ -14,7 +14,7 @@ public class WebServer {
 	
     public static void main(String argv[]) throws Exception {
         User user = new User("wyparks2", "1234", "박원영", "wyaprks2@gmail.com");
-        DataBase.addUser(user);
+        DataBase.addUser(user );
 
         // 서버소켓을 생성한다. 웹서버는 기본적으로 8080번 포트를 사용한다.
     	
