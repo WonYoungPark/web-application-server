@@ -23,7 +23,5 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-logs/
 
-## out
-out/
+/target/
