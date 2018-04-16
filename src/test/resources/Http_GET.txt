@@ -1,0 +1,4 @@
+GET /user/create?userId=wyparks2&password=1234&name=박원영 HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Accept: */*

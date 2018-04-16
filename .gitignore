@@ -24,4 +24,5 @@ dist/
 nbdist/
 .nb-gradle/
 
-/target/
+.idea/misc.xml
+target/
