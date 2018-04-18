@@ -20,8 +20,8 @@ import java.util.Set;
 public class HttpResponse {
     private static final Logger log = LoggerFactory.getLogger(HttpResponse.class);
 
-    private Map<String, String> headers = new HashMap<>();
     private DataOutputStream dos;
+    private Map<String, String> headers = new HashMap<>();
 
     public HttpResponse(OutputStream out) {
         dos = new DataOutputStream(out);
@@ -31,6 +31,13 @@ public class HttpResponse {
         try {
             byte[] body = Files.readAllBytes(new File("./webapp/index.html").toPath());
 
+            if (uri.endsWith(".css")) {
+                headers.put("Content-Type", "text/css");
+            } else if (uri.endsWith(".js")) {
+                headers.put("Content-Type", "application/javascript");
+            } else {
+                headers.put("Content-Type", "text/html;charset=utf=8");
+            }
             headers.put("Content-Type", body.length + "");
             response200Header(body.length);
             responseBody(body);

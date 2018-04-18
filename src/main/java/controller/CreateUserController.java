@@ -1,7 +1,11 @@
 package controller;
 
+import db.DataBase;
 import http.HttpRequest;
 import http.HttpResponse;
+import model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by wyparks2@gmail.com on 2018. 4. 16.
@@ -9,9 +13,18 @@ import http.HttpResponse;
  * Github : http://github.com/WonYoungPark
  */
 public class CreateUserController extends AbstractController {
+    private static final Logger log = LoggerFactory.getLogger(CreateUserController.class);
 
     @Override
     public void doPost(HttpRequest request, HttpResponse response) {
-        super.doPost(request, response);
+        User user = new User(
+            request.getParameter("userId"),
+            request.getParameter("password"),
+            request.getParameter("name"),
+            request.getParameter("email"));
+
+        log.debug("user : {}", user);
+        DataBase.addUser(user);
+        response.sendRedirect("/index.html");
     }
 }

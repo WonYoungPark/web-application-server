@@ -1,7 +1,11 @@
 package controller;
 
+import db.DataBase;
 import http.HttpRequest;
 import http.HttpResponse;
+import model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by wyparks2@gmail.com on 2018. 4. 16.
@@ -9,9 +13,20 @@ import http.HttpResponse;
  * Github : http://github.com/WonYoungPark
  */
 public class LoginController extends AbstractController {
+    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
     @Override
     public void doPost(HttpRequest request, HttpResponse response) {
-        super.doPost(request, response);
+        User user = DataBase.findUserById(request.getParameter("userId"));
+        if (user != null) {
+            if (user.login(request.getParameter("password"))) {
+                response.addHeader("Set-Cookie", "logined=true; Path=/");
+                response.sendRedirect("/index.html");
+            } else {
+                response.sendRedirect("/user/login_failed.html");
+            }
+        } else {
+            response.sendRedirect("/user/login_failed.html");
+        }
     }
 }

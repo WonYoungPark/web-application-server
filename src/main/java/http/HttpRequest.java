@@ -20,10 +20,9 @@ import java.util.Map;
 public class HttpRequest {
     private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 
-    private String method;
-    private String path;
     private Map<String, String> headers    = new HashMap<>();
     private Map<String, String> parameters = new HashMap<>();
+    private RequestLine requestLine;
 
     public HttpRequest(InputStream in) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
@@ -34,7 +33,7 @@ public class HttpRequest {
         }
 
         // 요청라인
-        parseRequestLine(line);
+        requestLine = new RequestLine(line);
 
         // Header
         line = bufferedReader.readLine();
@@ -51,21 +50,8 @@ public class HttpRequest {
         parseRequestBody(bufferedReader);
     }
 
-    private void parseRequestLine(String requestLine) {
-        method = HttpRequestUtils.getHttpMethod(requestLine);
-
-        if ("GET".equals(method)) {
-            int index = requestLine.indexOf("?");
-            path = HttpRequestUtils.getUrl(requestLine.substring(0, index));
-            String queryString = requestLine.substring(index + 1);
-            parameters = HttpRequestUtils.parseQueryString(queryString);
-        } else if ("POST".equals(method)) {
-            path = HttpRequestUtils.getUrl(requestLine);
-        }
-    }
-
     private void parseRequestBody(BufferedReader bufferedReader) throws IOException {
-        if (!"POST".equals(method))
+        if (!getMethod().isPost())
             return;
 
         String requestBody = IOUtils.readData(bufferedReader, Integer.parseInt(getHeader("Content-Length")));
@@ -73,20 +59,22 @@ public class HttpRequest {
         parameters = HttpRequestUtils.parseQueryString(requestBody);
     }
 
-    public String getMethod() {
-        return method;
+    public HttpMethod getMethod() {
+        return requestLine.getMethod();
     }
 
     public String getPath() {
-        return path;
+        return requestLine.getPath();
     }
 
     public String getHeader(String key) {
-
         return headers.getOrDefault(key, "");
     }
 
     public String getParameter(String key) {
-        return parameters.getOrDefault(key, "");
+        return parameters.get(key);
     }
+
+
+
 }
